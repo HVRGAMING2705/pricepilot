@@ -29,7 +29,7 @@
         },
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "https://pricepilot.vercel.app"
+          "value": "https://pricepilot-neon.vercel.app"
         },
         {
           "key": "Content-Security-Policy",
