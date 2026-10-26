@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PricePilot — Used Car Price Predictor | AI/ML Project by Vikranth Reddy</title>
+<meta name="description" content="PricePilot predicts the resale price of a used car from age, mileage, engine size, brand tier and more, using ridge regression. Try the interactive browser demo.">
+<meta property="og:title" content="PricePilot — Used Car Price Predictor">
+<meta property="og:description" content="Ridge regression predicts a used car's resale price in seconds. Try the interactive demo.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pricepilot.vercel.app/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PricePilot — Used Car Price Predictor">
+<meta name="twitter:description" content="Ridge regression predicts a used car's resale price in seconds.">
+<link rel="canonical" href="https://pricepilot.vercel.app/">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"PricePilot","applicationCategory":"AI/ML demo","author":{"@type":"Person","name":"Vikranth Reddy"},"description":"Used car price predictor using ridge regression."}
+</script>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;max-width:760px;margin:0 auto;padding:24px;line-height:1.5}
+h1{font-size:2em;margin-bottom:0}.sub{color:#333;margin-top:4px}
+label{display:block;margin:14px 0 2px;font-weight:bold}
+input,select{width:100%;padding:8px;font-size:16px;border:1px solid #000;border-radius:4px;box-sizing:border-box}
+button{margin-top:18px;padding:12px 24px;font-size:17px;background:#000;color:#fff;border:0;border-radius:4px;cursor:pointer}
+button.preset{background:#fff;color:#000;border:1px solid #000;margin-right:8px}
+#out{margin-top:22px;padding:18px;border:2px solid #000;border-radius:6px;font-size:1.3em}
+small{color:#333}.row{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+@media(max-width:600px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<h1>PricePilot</h1>
+<p class="sub">Used Car Price Predictor — ridge regression (alpha = 1.0), trained on 600 synthetic car listings. All prediction happens in your browser; no data leaves this page.</p>
+<div class="row">
+<div><label>Age (years)</label><input id="age" type="number" min="0" max="15" step="0.5" value="5"></div>
+<div><label>Mileage (thousand km)</label><input id="mileage" type="number" min="5" max="180" value="60"></div>
+<div><label>Engine size (litres)</label><input id="engine" type="number" min="0.8" max="3" step="0.1" value="1.5"></div>
+<div><label>Brand tier</label><select id="brand"><option value="0">Budget</option><option value="1" selected>Mid-range</option><option value="2">Premium</option></select></div>
+<div><label>Previous owners</label><input id="owners" type="number" min="1" max="3" value="1"></div>
+<div><label>Fuel</label><select id="diesel"><option value="0" selected>Petrol</option><option value="1">Diesel</option></select></div>
+<div><label>Transmission</label><select id="auto"><option value="0" selected>Manual</option><option value="1">Automatic</option></select></div>
+</div>
+<button onclick="predict()">Predict price</button>
+<div>
+<button class="preset" onclick="preset(1,10,2.0,2,1,0,1)">Almost-new premium</button>
+<button class="preset" onclick="preset(5,60,1.5,1,1,0,0)">Average family car</button>
+<button class="preset" onclick="preset(10,140,1.2,0,2,1,0)">Old budget car</button>
+</div>
+<div id="out">Enter the car details and press Predict price.</div>
+<p><small>Model: 5-fold cross-validated R² = 0.745, mean absolute error = ₹1.79 lakh (baseline guessing the average price: ₹3.62 lakh — about 2× better). Predictions are capped between ₹0.50 lakh and ₹80 lakh. Trained on synthetic data for learning purposes; real prices also depend on condition, service history and local demand.</small></p>
+<p><small>By Vikranth Reddy — B.Tech CSE (AI &amp; ML), Woxsen University. <a href="https://github.com/HVRGAMING2705/pricepilot">GitHub repo</a></small></p>
+<script>
+const MEANS=[7.439798275483185,93.23712142087014,1.9155873542056512,0.9733333333333334,1.9566666666666668,0.5283333333333333,0.51];
+const STDS=[4.3048090885702965,51.59726045496171,0.6379029059881691,0.8037136029429628,0.8295313268480089,0.4991965767332771,0.4998999899979984];
+const COEF=[-2.903027706562556,-1.1407650011348498,0.7277325125153632,2.407114736505856,-0.5200043778583229,0.0836495196105867,0.30054647479339774];
+const INTERCEPT=4.113767659289177;
+function modelPrice(v){let s=INTERCEPT;for(let i=0;i<7;i++)s+=COEF[i]*((v[i]-MEANS[i])/STDS[i]);return Math.min(80,Math.max(0.5,s));}
+function predict(){const v=[+document.getElementById('age').value,+document.getElementById('mileage').value,+document.getElementById('engine').value,+document.getElementById('brand').value,+document.getElementById('owners').value,+document.getElementById('diesel').value,+document.getElementById('auto').value];
+const p=modelPrice(v);
+document.getElementById('out').innerHTML='Estimated resale price: <b>₹'+p.toFixed(2)+' lakh</b> (₹'+Math.round(p*100000).toLocaleString('en-IN')+')';}
+function preset(a,m,e,b,o,d,au){document.getElementById('age').value=a;document.getElementById('mileage').value=m;document.getElementById('engine').value=e;document.getElementById('brand').value=b;document.getElementById('owners').value=o;document.getElementById('diesel').value=d;document.getElementById('auto').value=au;predict();}
+</script>
+</body>
+</html>
